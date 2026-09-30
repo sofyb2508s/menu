@@ -1,0 +1,31 @@
+name: Update UTB Menu
+
+on:
+  schedule:
+    - cron: '0 5 * * *' # Автоматично щодня о 05:00 ранку
+  workflow_dispatch: # Дозволяє запуск вручну
+
+jobs:
+  update-menu:
+    runs-runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run script
+        run: python fetch_menu.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add menu.json
+          git commit -m "Auto-update menu" || exit 0
+          git push
